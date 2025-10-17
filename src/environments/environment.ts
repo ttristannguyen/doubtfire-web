@@ -2,8 +2,30 @@
 // `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+const defaultKeycloak = {
+  url: 'http://localhost:8080',
+  realm: 'doubtfire',
+  clientId: 'doubtfire-web',
+};
+
+type KeycloakWindowConfig = Partial<typeof defaultKeycloak>;
+
+let keycloakWindowConfig: KeycloakWindowConfig = {};
+
+if (typeof window !== 'undefined') {
+  const globalWindow = window as unknown as {__keycloakConfig?: KeycloakWindowConfig};
+  if (globalWindow.__keycloakConfig) {
+    keycloakWindowConfig = globalWindow.__keycloakConfig;
+  }
+}
+
 export const environment = {
-  production: false
+  production: false,
+  keycloak: {
+    url: keycloakWindowConfig.url || defaultKeycloak.url,
+    realm: keycloakWindowConfig.realm || defaultKeycloak.realm,
+    clientId: keycloakWindowConfig.clientId || defaultKeycloak.clientId,
+  },
 };
 
 /*

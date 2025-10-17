@@ -21,15 +21,8 @@ services:
       DF_SECRET_KEY_ATTR: test-secret-key-test-secret-key!
       DF_SECRET_KEY_DEVISE: test-secret-key-test-secret-key!
 
-      # Authentication method - can set to AAF or ldap
-      DF_AUTH_METHOD: database
-      DF_AAF_ISSUER_URL: https://rapid.test.aaf.edu.au
-      DF_AAF_AUDIENCE_URL: http://localhost:4200
-      DF_AAF_CALLBACK_URL: http://localhost:4200/api/auth/jwt
-      DF_AAF_IDENTITY_PROVIDER_URL: https://signon-uat.deakin.edu.au/idp/shibboleth
-      DF_AAF_UNIQUE_URL: https://rapid.test.aaf.edu.au/jwt/authnrequest/research/Ag4EJJhjf0zXHqlKvKZEbg
-      DF_AAF_AUTH_SIGNOUT_URL: https://sync-uat.deakin.edu.au/auth/logout
-      DF_SECRET_KEY_AAF: v4~LMFLzzwRGZdju\5QBa@FiHIN9
+    # Authentication method - can set to AAF or ldap
+    DF_AUTH_METHOD: keycloak
 
       # Database settings - for development env
       DF_DEV_DB_ADAPTER: mysql2
@@ -58,6 +51,26 @@ services:
       RABBITMQ_USERNAME: secure_credentials
       RABBITMQ_PASSWORD: secure_credentials
 
+      # Keycloak
+      KEYCLOAK_REALM: doubtfire
+      KEYCLOAK_URL: http://keycloak:8080/
+      KEYCLOAK_API_AUDIENCE: doubtfire-api
+      KEYCLOAK_PUBLIC_KEY: "${KEYCLOAK_PUBLIC_KEY:-}"
+      CORS_ALLOWED_ORIGINS: http://localhost:4200,http://localhost:8000
+
+  keycloak:
+    container_name: web-doubtfire-keycloak
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ../keycloak/realm:/opt/keycloak/data/import
+      - keycloak_data:/opt/keycloak/data
+    ports:
+      - "8080:8080"
+
   dev-db:
     container_name: doubtfire-dev-db
     image: mariadb
@@ -78,5 +91,9 @@ services:
       - "9876:9876"
     depends_on:
       - doubtfire-api
+      - keycloak
     volumes:
       - .:/doubtfire-web
+
+volumes:
+  keycloak_data:

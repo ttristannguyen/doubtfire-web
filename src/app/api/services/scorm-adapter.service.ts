@@ -59,8 +59,7 @@ export class ScormAdapterService {
 
     if (this.context.mode === 'review') {
       this.xhr.open('GET', `${API_URL}/test_attempts/${this.context.attemptId}/review`, false);
-      this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-      this.xhr.setRequestHeader('Username', this.context.user.username);
+      this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
 
       this.xhr.send();
       // console.log(this.xhr.responseText);
@@ -79,8 +78,7 @@ export class ScormAdapterService {
       `${API_URL}/projects/${this.context.projectId}/task_def_id/${this.context.taskDefId}/test_attempts/latest`,
       false,
     );
-    this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-    this.xhr.setRequestHeader('Username', this.context.user.username);
+    this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
 
     let noTestFound = false;
     let startNewTest = false;
@@ -116,8 +114,7 @@ export class ScormAdapterService {
 
     if (!startNewTest) {
       this.xhr.open('PATCH', `${API_URL}/test_attempts/${this.context.attemptId}`, false);
-      this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-      this.xhr.setRequestHeader('Username', this.context.user.username);
+      this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
       this.xhr.send();
       // console.log(this.xhr.responseText);
 
@@ -132,8 +129,7 @@ export class ScormAdapterService {
         `${API_URL}/projects/${this.context.projectId}/task_def_id/${this.context.taskDefId}/test_attempts`,
         false,
       );
-      this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-      this.xhr.setRequestHeader('Username', this.context.user.username);
+      this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
       this.xhr.send();
       // console.log(this.xhr.responseText);
 
@@ -164,8 +160,7 @@ export class ScormAdapterService {
     }
 
     this.xhr.open('PATCH', `${API_URL}/test_attempts/${this.context.attemptId}`, false);
-    this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-    this.xhr.setRequestHeader('Username', this.context.user.username);
+    this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
     this.xhr.setRequestHeader('Content-Type', 'application/json');
     const requestData = {
       cmi_datamodel: JSON.stringify(this.dataModel.dump()),
@@ -200,7 +195,7 @@ export class ScormAdapterService {
     return value;
   }
 
-  SetValue(element: string, value: any): string {
+  SetValue(element: string, value: string): string {
     // console.log(`API_1484_11: SetValue:`, element, value);
 
     // TODO: error reporting
@@ -237,8 +232,7 @@ export class ScormAdapterService {
     }
 
     this.xhr.open('PATCH', `${API_URL}/test_attempts/${this.context.attemptId}`, true);
-    this.xhr.setRequestHeader('Auth-Token', this.context.user.authenticationToken);
-    this.xhr.setRequestHeader('Username', this.context.user.username);
+    this.xhr.setRequestHeader('Authorization', `Bearer ${this.context.user.authenticationToken}`);
     this.xhr.setRequestHeader('Content-Type', 'application/json');
     const requestData = {
       cmi_datamodel: JSON.stringify(this.dataModel.dump()),
@@ -275,7 +269,7 @@ export class ScormAdapterService {
     return errorString;
   }
 
-  GetDiagnostic(errorCode: string): string {
+  GetDiagnostic(_errorCode: string): string {
     // TODO: implement this
     // console.log(`API_1484_11: GetDiagnostic:`, errorCode);
     return 'GetDiagnostic is currently not implemented';

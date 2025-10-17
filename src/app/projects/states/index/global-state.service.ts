@@ -97,6 +97,7 @@ export class GlobalStateService implements OnDestroy {
   public isLoadingSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   public showHideHeader: Subject<boolean> = new Subject<boolean>();
+  private hasLoadedGlobals = false;
 
   constructor(
     private unitRoleService: UnitRoleService,
@@ -114,17 +115,24 @@ export class GlobalStateService implements OnDestroy {
     this.loadedUnits = this.unitService.cache;
     this.currentUserProjects = this.projectService.cache;
 
-    this.authenticationService.checkUserCookie();
+    this.authenticationService.sessionState$.subscribe((state) => {
+      if (state === 'authenticated') {
+        if (!this.hasLoadedGlobals) {
+          this.hasLoadedGlobals = true;
+          this.loadGlobals();
+        }
+        return;
+      }
 
-    setTimeout(() => {
-      if (this.authenticationService.isAuthenticated()) {
-        this.loadGlobals();
-      } else {
-        // not loading anything as no user - just redirect to sign in
+      if (state === 'unauthenticated') {
+        this.hasLoadedGlobals = false;
         this.isLoadingSubject.next(false);
         this.router.stateService.go('sign_in');
+        return;
       }
-    }, 800);
+
+      this.isLoadingSubject.next(true);
+    });
 
     // this is a hack to workaround horrific IOS "feature"
     // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
@@ -270,7 +278,7 @@ export class GlobalStateService implements OnDestroy {
       },
       error: (_response) => {
         this.alerts.error('Unable to access your units.', 6000);
-      }
+      },
     });
   }
 

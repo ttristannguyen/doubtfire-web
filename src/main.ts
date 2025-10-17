@@ -17,7 +17,10 @@ if (environment.production) {
 
 // Using AngularJS config block, call `deferIntercept()`.
 // This tells UI-Router to delay the initial URL sync (until all bootstrapping is complete)
-DoubtfireAngularJSModule.config(['$urlServiceProvider', ($urlService: UrlService) => $urlService.deferIntercept()]);
+DoubtfireAngularJSModule.config([
+  '$urlServiceProvider',
+  ($urlService: UrlService) => $urlService.deferIntercept(),
+]);
 
 // Manually bootstrap the Angular app
 platformBrowserDynamic()
@@ -25,7 +28,9 @@ platformBrowserDynamic()
   .then((platformRef) => {
     // Intialize the Angular Module
     // get() the UIRouter instance from DI to initialize the router
-    const urlService: UrlService = platformRef.injector.get<UIRouter>(UIRouter as Type<UIRouter>).urlService;
+    const urlService: UrlService = platformRef.injector.get<UIRouter>(
+      UIRouter as Type<UIRouter>,
+    ).urlService;
 
     // Instruct UIRouter to listen to URL changes
     function startUIRouter() {

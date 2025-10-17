@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script>
+      // Keycloak requires this helper page to perform silent SSO checks in an iframe.
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>

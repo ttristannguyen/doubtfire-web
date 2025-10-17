@@ -12,8 +12,7 @@ angular.module("doubtfire.sessions.auth.http-auth-injector", [])
       # Intercept API requests and inject the auth token.
       if _.startsWith(request.url, DoubtfireConstants.API_URL) and newUserService.currentUser.authenticationToken?
         request.headers = {} unless _.has(request, "headers")
-        request.headers.Auth_Token = newUserService.currentUser.authenticationToken
-        request.headers.Username = newUserService.currentUser.username
+        request.headers.Authorization = "Bearer #{newUserService.currentUser.authenticationToken}"
       request or $q.when request
 
     #

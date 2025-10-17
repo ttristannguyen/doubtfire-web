@@ -292,7 +292,6 @@ angular.module('doubtfire.common.file-uploader', ["ngFileUpload"])
       xhr.open $scope.method, $scope.url, true
 
       # Add auth details
-      xhr.setRequestHeader('Auth-Token', newUserService.currentUser.authenticationToken)
-      xhr.setRequestHeader('Username', newUserService.currentUser.username)
+      xhr.setRequestHeader 'Authorization', "Bearer #{newUserService.currentUser.authenticationToken}"
 
       xhr.send form

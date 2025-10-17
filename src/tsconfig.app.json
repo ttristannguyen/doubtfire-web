@@ -2,7 +2,14 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out/app",
-    "types": []
+    "types": [],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable",
+      "ES2015.Iterable"
+    ],
+    "skipLibCheck": true
   },
   "files": ["main.ts", "polyfills.ts"],
   "include": ["src/**/*.d.ts", "src/**/*.ts"]
