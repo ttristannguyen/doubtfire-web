@@ -199,4 +199,26 @@ export class AuthenticationService {
       }),
     );
   }
+
+  public initiateGoogleSignin(): void {
+    this.httpClient.get(`${this.AUTH_URL}/google`).subscribe((response: any) => {
+      window.location.assign(response.signin_url);
+    });
+  }
+
+  public initiateGoogleLink(): Observable<{ link_url: string }> {
+    return this.httpClient.get<{ link_url: string }>(`${this.AUTH_URL}/link/google`);
+  }
+
+  public getLinkedLogins(userId: number): Observable<{ provider: string; provider_identifier: string; created_at: string }[]> {
+    return this.httpClient.get<{ provider: string; provider_identifier: string; created_at: string }[]>(
+      `${this.doubtfireConstants.API_URL}/users/${userId}/linked_logins`,
+    );
+  }
+
+  public unlinkGoogle(userId: number): Observable<void> {
+    return this.httpClient.delete<void>(
+      `${this.doubtfireConstants.API_URL}/users/${userId}/linked_logins/google`,
+    );
+  }
 }

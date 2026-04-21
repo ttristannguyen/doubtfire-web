@@ -35,6 +35,8 @@ export class SignInComponent implements OnInit {
   authMethodLoaded: boolean;
   externalName: any;
   formData: signInData;
+  providers: {name: string; url: string}[] = [];
+  googleSigninEnabled = false;
   constructor(
     private authService: AuthenticationService,
     private state: StateService,
@@ -62,16 +64,20 @@ export class SignInComponent implements OnInit {
     this.http.get(`${this.constants.API_URL}/auth/method`).subscribe((response: any) => {
       // if there is a string in response.data.redirect_to
       this.SSOLoginUrl = response.redirect_to || false;
+      this.providers = response.providers || [];
+      this.googleSigninEnabled = response.google_signin_enabled || false;
+
+      // Handle one-time authToken in URL first — applies to AAF, SAML, and Google sign-in callbacks
+      if (this.transition.params().authToken) {
+        return this.signIn({
+          auth_token: this.transition.params().authToken,
+          username: this.transition.params().username,
+          remember: true,
+        });
+      }
 
       if (this.SSOLoginUrl) {
-        if (this.transition.params().authToken) {
-          // This is SSO and we just got an auth_token? Must request to sign in
-          return this.signIn({
-            auth_token: this.transition.params().authToken,
-            username: this.transition.params().username,
-            remember: true,
-          });
-        } else if (this.formData.autoLogin) {
+        if (this.formData.autoLogin) {
           return wait.then(() => {
             // Double check in case changed in the meantime
             if (this.formData.autoLogin) {
@@ -117,6 +123,14 @@ export class SignInComponent implements OnInit {
 
       window.location.assign(this.SSOLoginUrl);
     }
+  }
+
+  redirectToProvider(url: string): void {
+    window.location.assign(url);
+  }
+
+  signInWithGoogle(): void {
+    this.authService.initiateGoogleSignin();
   }
 
   signIn(signInCredentials: signInData): void {

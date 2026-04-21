@@ -49,6 +49,37 @@
             Sign In
           </button>
         </form>
+
+        @if (providers.length > 0) {
+          <div class="provider-buttons flex flex-col">
+            <p class="text-center">Or continue with</p>
+            @for (provider of providers; track provider.url) {
+              <button
+                class="w-full"
+                mat-stroked-button
+                type="button"
+                (click)="redirectToProvider(provider.url)"
+              >
+                {{ provider.name }}
+              </button>
+            }
+          </div>
+        }
+        @if (googleSigninEnabled) {
+          <div class="provider-buttons flex flex-col">
+            @if (providers.length === 0) {
+              <p class="text-center">Or continue with</p>
+            }
+            <button
+              class="w-full"
+              mat-stroked-button
+              type="button"
+              (click)="signInWithGoogle()"
+            >
+              Sign in with Google
+            </button>
+          </div>
+        }
       </div>
     </div>
   </section>

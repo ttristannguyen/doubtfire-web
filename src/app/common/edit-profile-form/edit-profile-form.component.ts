@@ -2,6 +2,7 @@ import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StateService } from '@uirouter/core';
+import { HttpClient } from '@angular/common/http';
 import { User } from 'src/app/api/models/user/user';
 import { AuthenticationService } from 'src/app/api/services/authentication.service';
 import { UserService } from 'src/app/api/services/user.service';
@@ -18,6 +19,7 @@ export class EditProfileFormComponent implements OnInit {
     private userService: UserService,
     private state: StateService,
     private authService: AuthenticationService,
+    private http: HttpClient,
     @Optional() @Inject(MAT_DIALOG_DATA) public data: { user: User; mode: 'edit' | 'create' | 'new' },
     private _snackBar: MatSnackBar
   ) {
@@ -40,6 +42,10 @@ export class EditProfileFormComponent implements OnInit {
     return this.formPronouns.pronouns === '__customPronouns';
   }
 
+  public keycloakEnabled = false;
+  public googleLinked = false;
+  public googleEmail = '';
+
   ngOnInit(): void {
     if (this.data?.mode) {
       this.mode = this.data.mode;
@@ -53,6 +59,35 @@ export class EditProfileFormComponent implements OnInit {
     this.user.receiveFeedbackNotifications = true;
     this.user.receivePortfolioNotifications = true;
     this.user.receiveTaskNotifications = true;
+
+    this.http.get(`${this.constants.API_URL}/auth/method`).subscribe((response: any) => {
+      this.keycloakEnabled = response.google_signin_enabled || false;
+      if (this.keycloakEnabled) {
+        this.authService.getLinkedLogins(this.user.id).subscribe((logins) => {
+          const google = logins.find((l) => l.provider === 'google');
+          this.googleLinked = !!google;
+          this.googleEmail = google?.provider_identifier || '';
+        });
+      }
+    });
+  }
+
+  public connectGoogle(): void {
+    this.authService.initiateGoogleLink().subscribe((response) => {
+      window.location.assign(response.link_url);
+    });
+  }
+
+  public disconnectGoogle(): void {
+    this.authService.unlinkGoogle(this.user.id).subscribe(() => {
+      this.googleLinked = false;
+      this.googleEmail = '';
+      this._snackBar.open('Google account disconnected', 'dismiss', {
+        duration: 1500,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
+    });
   }
 
   public signOut(): void {

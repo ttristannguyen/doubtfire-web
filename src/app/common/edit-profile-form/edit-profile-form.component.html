@@ -126,6 +126,24 @@
         </mat-checkbox>
       </section>
       }
+      @if (keycloakEnabled) {
+      <section fxLayout="column" fxFlexFill style="padding-top: 12px">
+        <h3>Connected Accounts</h3>
+        @if (googleLinked) {
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+            <span>Google: {{ googleEmail }}</span>
+            <button mat-stroked-button color="warn" type="button" (click)="disconnectGoogle()">
+              Disconnect
+            </button>
+          </div>
+        } @else {
+          <button mat-stroked-button type="button" (click)="connectGoogle()">
+            Connect Google Account
+          </button>
+        }
+      </section>
+      }
+
       <div fxLayout="row" fxFlexFill style="padding-top: 12px">
         <button [hidden]="mode === 'edit' || mode === 'new'" fxFlexAlign="start" type="button" mat-stroked-button (click)="signOut()">
           Sign Out
