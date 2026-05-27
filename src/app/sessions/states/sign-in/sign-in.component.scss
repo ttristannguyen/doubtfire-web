@@ -13,6 +13,19 @@
   overflow-y: hidden;
 }
 
+.google-signin-btn {
+  .google-signin-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .google-logo {
+    flex-shrink: 0;
+  }
+}
+
 /* Custom CSS for overriding md breakpoint */
 @media (min-width: 960px) {
   .custom-md-h-screen {
